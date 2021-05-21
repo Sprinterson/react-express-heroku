@@ -9,10 +9,18 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+// var indexRouter = require('./routes/index');
+// var usersRouter = require('./routes/users');
 
 var app = express();
+
+// Serves all our static files from the build directory. 
+app.use(express.static(path.join(__dirname, 'build')));
+
+// Keep our client side routing functional. This code essentially serves the index.html file on any unknown routes. Otherwise we would need to rewrite our entire routing to work with this Express server setup. 
+app.get('/*', (req, res) => {
+	res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -24,8 +32,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// app.use('/', indexRouter);
+// app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -41,14 +49,6 @@ app.use(function (err, req, res, next) {
 	// render the error page
 	res.status(err.status || 500);
 	res.render('error');
-});
-
-// Serves all our static files from the build directory. 
-app.use(express.static(path.join(__dirname, 'build')));
-
-// Keep our client side routing functional. This code essentially serves the index.html file on any unknown routes. Otherwise we would need to rewrite our entire routing to work with this Express server setup. 
-app.get('/*', (req, res) => {
-	res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 module.exports = app;
